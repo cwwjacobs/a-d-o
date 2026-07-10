@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Terminus Protocol builds local-first AI tools, agent observability systems, evaluation harnesses, and security-aware workflows." />
+  <title>Terminus Protocol | Applied AI Systems</title>
+  <style>
+    :root {
+      --bg: #05040a;
+      --panel: rgba(14, 11, 24, 0.78);
+      --panel-strong: rgba(18, 14, 31, 0.94);
+      --line: rgba(179, 154, 255, 0.2);
+      --text: #f6f3ff;
+      --muted: #aaa3bd;
+      --purple: #9c6cff;
+      --cyan: #52e4ff;
+      --gold: #ffd77a;
+      --pink: #ff5fb7;
+      --danger: #ff6b7f;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 50% -15%, rgba(122, 76, 255, 0.17), transparent 42%),
+        radial-gradient(circle at 92% 30%, rgba(82, 228, 255, 0.09), transparent 34%),
+        linear-gradient(180deg, #07050d 0%, #040308 54%, #020204 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.24;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, black, transparent 85%);
+    }
+
+    a { color: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-size: .78rem;
+      font-weight: 800;
+    }
+
+    .brand-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--purple);
+      box-shadow: 0 0 18px var(--purple), 0 0 46px rgba(82, 228, 255, .45);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: .88rem;
+    }
+
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,.045); }
+
+    .hero {
+      min-height: 660px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 70px 0 96px;
+      position: relative;
+    }
+
+    .hero-copy { max-width: 900px; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.025);
+      color: #c9c1da;
+      font-size: .78rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow i {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--cyan);
+      box-shadow: 0 0 14px var(--cyan);
+    }
+
+    h1 {
+      margin: 26px auto 20px;
+      max-width: 900px;
+      font-size: clamp(3.2rem, 8vw, 7.6rem);
+      line-height: .88;
+      letter-spacing: -.075em;
+      text-wrap: balance;
+    }
+
+    h1 span {
+      display: block;
+      background: linear-gradient(110deg, #fff 12%, #cabaff 45%, #7deeff 74%, #ffe098 95%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: clamp(1rem, 2.2vw, 1.3rem);
+      line-height: 1.68;
+      text-wrap: balance;
+    }
+
+    .hero-actions {
+      margin-top: 34px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 750;
+      font-size: .92rem;
+      background: rgba(255,255,255,.035);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .button:hover { transform: translateY(-2px); border-color: rgba(179,154,255,.55); }
+    .button.primary {
+      color: #0a0710;
+      background: linear-gradient(120deg, #cdbfff, #70e9ff 65%, #ffe099);
+      border-color: transparent;
+      box-shadow: 0 12px 40px rgba(112, 233, 255, .15);
+    }
+
+    .focal-wrap {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      width: 190px;
+      height: 150px;
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+    }
+
+    .focal-wrap::before {
+      content: "";
+      position: absolute;
+      width: 270px;
+      height: 270px;
+      border-radius: 999px;
+      z-index: -2;
+      background: radial-gradient(circle, rgba(255,255,255,.28) 0%, rgba(156,108,255,.18) 22%, rgba(82,228,255,.08) 43%, transparent 70%);
+      filter: blur(24px);
+      animation: breathe 5.8s ease-in-out infinite;
+    }
+
+    .focal-wrap::after {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 120px;
+      z-index: -1;
+      background: conic-gradient(from 205deg at 50% 100%, transparent 0deg, rgba(82,228,255,.12) 24deg, rgba(255,255,255,.2) 42deg, rgba(156,108,255,.14) 58deg, transparent 83deg);
+      filter: blur(13px);
+      animation: drift 8.5s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%,100% { opacity: .3; transform: scale(.75); }
+      50% { opacity: .95; transform: scale(1.08); }
+    }
+
+    @keyframes drift {
+      0%,100% { opacity: .12; transform: translateY(8px) scale(.92); }
+      50% { opacity: .42; transform: translateY(-8px) scale(1.07); }
+    }
+
+    .focal {
+      width: 92px;
+      height: 92px;
+      border: 1px solid rgba(202, 186, 255, .45);
+      border-radius: 24px;
+      display: grid;
+      place-items: center;
+      background: rgba(8, 6, 15, .82);
+      box-shadow: inset 0 0 24px rgba(156,108,255,.11), 0 0 35px rgba(156,108,255,.22);
+      color: #f9f7ff;
+      font: 800 1.25rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      cursor: pointer;
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .focal:hover {
+      transform: scale(1.06) rotate(-1deg);
+      box-shadow: inset 0 0 30px rgba(82,228,255,.16), 0 0 60px rgba(156,108,255,.34);
+    }
+
+    section { padding: 92px 0; }
+    .section-head { max-width: 760px; margin-bottom: 34px; }
+    .kicker { color: var(--cyan); text-transform: uppercase; letter-spacing: .13em; font-size: .76rem; font-weight: 850; }
+    h2 { margin: 10px 0 12px; font-size: clamp(2rem, 4.5vw, 4rem); letter-spacing: -.045em; line-height: 1; }
+    .section-head p { margin: 0; color: var(--muted); line-height: 1.65; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      grid-column: span 4;
+      min-height: 260px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(150deg, rgba(255,255,255,.045), rgba(255,255,255,.015));
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      transition: transform .22s ease, border-color .22s ease;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      right: -90px;
+      top: -90px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(156,108,255,.22), transparent 68%);
+      pointer-events: none;
+    }
+
+    .card:hover { transform: translateY(-5px); border-color: rgba(179,154,255,.52); }
+    .card .num { color: var(--gold); font: 700 .76rem/1 ui-monospace, monospace; letter-spacing: .12em; }
+    .card h3 { margin: 38px 0 10px; font-size: 1.3rem; letter-spacing: -.02em; }
+    .card p { color: var(--muted); line-height: 1.6; margin: 0 0 20px; }
+    .card a { color: #dcd2ff; text-decoration: none; font-weight: 750; font-size: .88rem; }
+    .card a:hover { color: var(--cyan); }
+
+    .services .card { grid-column: span 6; min-height: 220px; }
+    .proof {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .proof-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .proof-panel h3 { margin: 0 0 14px; font-size: 1.45rem; }
+    .proof-panel p, .proof-panel li { color: var(--muted); line-height: 1.68; }
+    .proof-panel ul { margin: 20px 0 0; padding-left: 19px; }
+
+    .terminal {
+      font: 500 .83rem/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #cfc6df;
+      background: #08070d;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .terminal strong { color: var(--cyan); font-weight: 700; }
+    .terminal .pass { color: #93ffc7; }
+    .terminal .hold { color: var(--gold); }
+
+    footer {
+      padding: 70px 0 110px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+
+    .drawer {
+      position: fixed;
+      z-index: 30;
+      top: 0;
+      right: 0;
+      width: min(460px, calc(100% - 20px));
+      height: 100dvh;
+      padding: 20px;
+      transform: translateX(calc(100% + 30px));
+      transition: transform .5s cubic-bezier(.22,.85,.24,1);
+      pointer-events: none;
+    }
+
+    .drawer.open { transform: translateX(0); pointer-events: auto; }
+    .drawer-panel {
+      height: 100%;
+      border: 1px solid rgba(179,154,255,.32);
+      border-radius: 28px;
+      background: rgba(8, 7, 14, .94);
+      backdrop-filter: blur(22px);
+      box-shadow: -30px 0 90px rgba(0,0,0,.72), 0 0 60px rgba(156,108,255,.12);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+
+    .drawer-head strong { font-size: .84rem; letter-spacing: .1em; text-transform: uppercase; }
+    .close {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: transparent;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .drawer-body { padding: 22px; overflow: auto; }
+    .drawer-body .prompt { color: var(--cyan); font: 700 .8rem/1.4 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .08em; }
+    .drawer-body h3 { font-size: 1.9rem; margin: 14px 0 12px; letter-spacing: -.04em; }
+    .drawer-body p { color: var(--muted); line-height: 1.7; }
+    .drawer-list { display: grid; gap: 10px; margin-top: 24px; }
+    .drawer-list a {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      text-decoration: none;
+      background: rgba(255,255,255,.025);
+    }
+    .drawer-list a:hover { border-color: rgba(82,228,255,.42); }
+
+    .veil {
+      position: fixed;
+      z-index: 20;
+      inset: 0;
+      background: rgba(0,0,0,.48);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .35s ease;
+    }
+    .veil.open { opacity: 1; pointer-events: auto; }
+
+    @media (max-width: 880px) {
+      .nav-links a:not(.button) { display: none; }
+      .card { grid-column: span 6; }
+      .proof { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 22px, 1180px); }
+      .hero { min-height: 700px; padding-top: 48px; }
+      h1 { font-size: clamp(3.15rem, 18vw, 5.2rem); }
+      section { padding: 72px 0; }
+      .card, .services .card { grid-column: 1 / -1; }
+      .nav { height: 68px; }
+      .button { width: 100%; }
+      .hero-actions { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="veil" id="veil"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <strong>Terminus Console</strong>
+        <button class="close" id="closeDrawer" aria-label="Close panel">×</button>
+      </div>
+      <div class="drawer-body">
+        <div class="prompt">/*\ active surface</div>
+        <h3>What can we build?</h3>
+        <p>I turn partially built AI systems, fragile agent workflows, and ambiguous technical requirements into bounded deliverables with tests, receipts, and a clean handoff.</p>
+        <div class="drawer-list">
+          <a href="https://contra.com/TerminusProtocol"><span>Start a project</span><span>↗</span></a>
+          <a href="https://github.com/cwwjacobs/agent-flight-recorder"><span>Inspect agent evidence work</span><span>↗</span></a>
+          <a href="https://github.com/cwwjacobs/dif-defense"><span>Inspect AI security work</span><span>↗</span></a>
+          <a href="https://github.com/cwwjacobs/LocalParse"><span>Inspect a static local-first tool</span><span>↗</span></a>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <header class="shell nav">
+    <a class="brand" href="#top"><span class="brand-dot"></span>Terminus Protocol</a>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a href="#work">Work</a>
+      <a href="#services">Services</a>
+      <a href="#proof">Proof</a>
+      <a class="button" href="https://contra.com/TerminusProtocol">Contra ↗</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero shell">
+      <div class="hero-copy">
+        <div class="eyebrow"><i></i> Applied AI systems and delivery</div>
+        <h1>Make the system <span>confess what happened.</span></h1>
+        <p class="lead">Local-first AI tools, agent observability, deterministic evaluation, and security-aware workflows. Working code first. Evidence beside it.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#work">View selected work</a>
+          <a class="button" href="https://github.com/cwwjacobs">Open GitHub</a>
+        </div>
+      </div>
+      <div class="focal-wrap" aria-label="Open project console">
+        <button class="focal" id="openDrawer">/*\</button>
+      </div>
+    </section>
+
+    <section class="shell" id="work">
+      <div class="section-head">
+        <div class="kicker">Selected work</div>
+        <h2>Systems with receipts.</h2>
+        <p>Six public projects that show the operating pattern: capture evidence, constrain behavior, keep data local when practical, and leave behind something another person can run.</p>
+      </div>
+      <div class="grid">
+        <article class="card"><div class="num">01 / OBSERVABILITY</div><h3>Agent Flight Recorder</h3><p>Records observable agent runs, checkpoints, errors, exports, and regression-case material through a local API, SDK, and CLI.</p><a href="https://github.com/cwwjacobs/agent-flight-recorder">Inspect repository ↗</a></article>
+        <article class="card"><div class="num">02 / WORKFLOWS</div><h3>Card Forge</h3><p>Reusable workflow Cards, Stacks, Decks, Runs, schemas, validators, and edge-sized execution packets.</p><a href="https://github.com/cwwjacobs/Card-Forge">Inspect repository ↗</a></article>
+        <article class="card"><div class="num">03 / VISUAL SYSTEMS</div><h3>Constellation</h3><p>Projects manifests, project maps, planned changes, capabilities, and drift receipts into a spatial operator console.</p><a href="https://github.com/cwwjacobs/ixc-constellation">Inspect repository ↗</a></article>
+        <article class="card"><div class="num">04 / AI SECURITY</div><h3>DIF Defense</h3><p>Compares observable traces against a frozen behavioral Kernel and emits bounded clean, warn, or compromised verdicts.</p><a href="https://github.com/cwwjacobs/dif-defense">Inspect repository ↗</a></article>
+        <article class="card"><div class="num">05 / LOCAL-FIRST DATA</div><h3>LocalParse</h3><p>A browser-only JSON and JSONL inspector with no backend, account, telemetry, or upload path.</p><a href="https://github.com/cwwjacobs/LocalParse">Inspect repository ↗</a></article>
+        <article class="card"><div class="num">06 / PRODUCT UTILITY</div><h3>Receipt Fixer</h3><p>Converts local receipt images and PDFs into verified CSV output while flagging uncertainty instead of fabricating fields.</p><a href="https://github.com/cwwjacobs/receipt-fixer">Inspect repository ↗</a></article>
+      </div>
+    </section>
+
+    <section class="shell services" id="services">
+      <div class="section-head">
+        <div class="kicker">Services</div>
+        <h2>Bring the hard middle.</h2>
+        <p>Best fit: you already have a repo, AI feature, internal workflow, or prototype. It needs to become legible, testable, reliable, and presentable.</p>
+      </div>
+      <div class="grid">
+        <article class="card"><div class="num">SERVICE / 01</div><h3>Agent-ready repo hardening</h3><p>Source-of-truth mapping, focused repairs, tests, CI rails, implementation handoff files, and a bounded release receipt.</p></article>
+        <article class="card"><div class="num">SERVICE / 02</div><h3>Evaluation harness implementation</h3><p>Frozen cases, model transports, structured validation, reproducible receipts, expected-versus-predicted comparisons, and local or API-backed runners.</p></article>
+        <article class="card"><div class="num">SERVICE / 03</div><h3>Local-first AI utility</h3><p>Compact HTML tools, Python CLIs, Tauri shells, or local APIs with explicit data flow, import/export paths, and demo fixtures.</p></article>
+        <article class="card"><div class="num">SERVICE / 04</div><h3>AI security test harness</h3><p>Scope guards, clean and adversarial fixtures, prompt-injection testing, canary leakage checks, repeatability measurement, and regression artifacts.</p></article>
+      </div>
+    </section>
+
+    <section class="shell" id="proof">
+      <div class="section-head">
+        <div class="kicker">Delivery proof</div>
+        <h2>Not just screenshots.</h2>
+        <p>The public work includes CI, smoke paths, deterministic validators, explicit claim boundaries, and a shipped third-party integration.</p>
+      </div>
+      <div class="proof">
+        <div class="proof-panel">
+          <h3>External implementation</h3>
+          <p>The Memanto SkillChain bridge connected separate developer skill runs through durable memory cards, included a reviewer-safe credential-free proof path, and preserved an optional live integration mode.</p>
+          <ul>
+            <li><a href="https://github.com/moorcheh-ai/memanto/pull/717">Memanto contribution PR ↗</a></li>
+            <li><a href="https://github.com/cwwjacobs/mdemo">Reproducible public demo ↗</a></li>
+          </ul>
+        </div>
+        <div class="proof-panel terminal" aria-label="Example delivery receipt">
+          <strong>$ delivery --verify</strong><br><br>
+          repository_map........ <span class="pass">PASS</span><br>
+          focused_tests......... <span class="pass">PASS</span><br>
+          claim_boundary........ <span class="pass">PASS</span><br>
+          reproducible_demo..... <span class="pass">PASS</span><br>
+          hidden_assumptions.... <span class="hold">HOLD</span><br><br>
+          output: evidence before adjectives
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell">
+    <div>Terminus Protocol · Corey Jacobs</div>
+    <div><a href="https://github.com/cwwjacobs">GitHub</a> · <a href="https://contra.com/TerminusProtocol">Contra</a></div>
+  </footer>
+
+  <script>
+    const drawer = document.getElementById('drawer');
+    const veil = document.getElementById('veil');
+    const openDrawer = document.getElementById('openDrawer');
+    const closeDrawer = document.getElementById('closeDrawer');
+
+    function setDrawer(open) {
+      drawer.classList.toggle('open', open);
+      veil.classList.toggle('open', open);
+      drawer.setAttribute('aria-hidden', String(!open));
+      document.body.style.overflow = open ? 'hidden' : '';
+      if (open) closeDrawer.focus();
+    }
+
+    openDrawer.addEventListener('click', () => setDrawer(true));
+    closeDrawer.addEventListener('click', () => setDrawer(false));
+    veil.addEventListener('click', () => setDrawer(false));
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setDrawer(false);
+    });
+  </script>
+</body>
+</html>
